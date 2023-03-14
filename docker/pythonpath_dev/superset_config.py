@@ -27,6 +27,7 @@ from typing import Optional
 
 from cachelib.file import FileSystemCache
 from celery.schedules import crontab
+from flask_appbuilder.security.manager import AUTH_OAUTH
 
 logger = logging.getLogger()
 
@@ -108,6 +109,34 @@ WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
 SQLLAB_CTAS_NO_LIMIT = True
 
+# Set the authentication type to OAuth
+AUTH_TYPE = AUTH_OAUTH
+
+OAUTH_PROVIDERS = [
+    {
+       'name': 'google',
+#        'whitelist': ['@bodnia.com']
+       'icon': 'fa-google',
+       'token_key': 'access_token',
+       'remote_app': {
+            'base_url': 'https://www.googleapis.com/oauth2/v2/',
+            'request_token_params': {
+                  'scope': ['email', 'profile']
+                },
+            'request_token_url': None,
+            'access_token_url': 'https://accounts.google.com/o/oauth2/token',
+            'authorize_url': 'https://accounts.google.com/o/oauth2/auth',
+            'consumer_key': os.getenv('GOOGLE_OAUTH_KEY'),
+            'consumer_secret': os.getenv('GOOGLE_OAUTH_SECRET')
+              }
+           }
+]
+# Will allow user self registration, allowing to create Flask users from Authorized User
+AUTH_USER_REGISTRATION = True
+
+# The default user self registration role
+AUTH_USER_REGISTRATION_ROLE = "Public"
+
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
@@ -121,3 +150,6 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+from custom_sso_security_manager import CustomSsoSecurityManager
+CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager

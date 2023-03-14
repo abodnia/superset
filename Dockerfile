@@ -86,6 +86,7 @@ COPY setup.py MANIFEST.in README.md /app/
 RUN cd /app \
         && chown -R superset:superset * \
         && pip install -e . \
+        && pip install Authlib \
         && flask fab babel-compile --target superset/translations
 
 COPY ./docker/run-server.sh /usr/bin/
